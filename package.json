@@ -8,7 +8,8 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "deploy": "push-dir --dir=dist/spa --remote=origin --branch=host"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -33,6 +34,7 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2",
+    "push-dir": "^0.4.1",
     "vue-apexcharts": "^1.6.0"
   },
   "browserslist": [

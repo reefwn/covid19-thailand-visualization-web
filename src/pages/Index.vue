@@ -3,51 +3,64 @@
     <div class="q-pa-md row items-start justify-evenly q-gutter-md">
       <q-card class="col-12 col-md">
         <q-card-section class="text-right text-white bg-red-5">
-          <div class="text-subtitle2">{{ $t('cases') }}</div>
-          <div class="text-h6">{{ summary ? summary.Confirmed.toLocaleString() : null }}</div>
-          <div class="text-subtitle2">+ {{ summary ? summary.NewConfirmed.toLocaleString() : null }}</div>
+          <div class="text-subtitle2">{{ $t("cases") }}</div>
+          <div class="text-h6">
+            {{ summary ? `${summary.total_case}` : null }}
+          </div>
+          <div class="text-subtitle2">
+            + {{ summary ? `${summary.new_case}`: null }}
+          </div>
         </q-card-section>
       </q-card>
       <q-card class="col-12 col-md">
         <q-card-section class="text-right text-white bg-green-5">
-          <div class="text-subtitle2">{{ $t('recovered') }}</div>
-          <div class="text-h6">{{ summary ? summary.Recovered.toLocaleString() : null }}</div>
-          <div class="text-subtitle2">+ {{ summary ? summary.NewRecovered.toLocaleString() : null }}</div>
-        </q-card-section>
-      </q-card>
-      <q-card class="col-12 col-md">
-        <q-card-section class="text-right text-white bg-orange-5">
-          <div class="text-subtitle2">{{ $t('hospitalized') }}</div>
-          <div class="text-h6">{{ summary ? summary.Hospitalized.toLocaleString() : null }}</div>
-          <div class="text-subtitle2">+ {{ summary ? summary.NewHospitalized.toLocaleString() : null }}</div>
+          <div class="text-subtitle2">{{ $t("recovered") }}</div>
+          <div class="text-h6">
+            {{ summary ? `${summary.total_recovered}` : null }}
+          </div>
+          <div class="text-subtitle2">
+            + {{ summary ? `${summary.new_recovered}` : null }}
+          </div>
         </q-card-section>
       </q-card>
       <q-card class="col-12 col-md">
         <q-card-section class="text-right text-white bg-brown-5">
-          <div class="text-subtitle2">{{ $t('death') }}</div>
-          <div class="text-h6">{{ summary ? summary.Deaths.toLocaleString() : null }}</div>
-          <div class="text-subtitle2">+ {{ summary ? summary.NewDeaths.toLocaleString() : null }}</div>
+          <div class="text-subtitle2">{{ $t("death") }}</div>
+          <div class="text-h6">
+            {{ summary ? `${summary.total_death}` : null }}
+          </div>
+          <div class="text-subtitle2">
+            + {{ summary ? `${summary.new_death}` : null }}
+          </div>
         </q-card-section>
       </q-card>
     </div>
-    <div class="row q-px-md">
-      <apexchart ref="dailyChart" class="col-12" width="100%" type="line" :options="dailyOptions" :series="dailySeries"></apexchart>
+    <div class="row justify-center fit">
+      <div class="col-8">
+        <apexchart
+          ref="dailyChart"
+          class="fit"
+          type="line"
+          :options="dailyOptions"
+          :series="dailySeries"
+        />
+      </div>
     </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import VueApexCharts from 'vue-apexcharts'
-import { Summary, Daily } from '../components/models'
+import { CovidSummary } from '../components/models'
 import { defineComponent, ref } from '@vue/composition-api'
 
 export default defineComponent({
   name: 'PageIndex',
   components: { VueApexCharts },
   setup () {
-    const summary = ref<Summary>()
-    const daily = ref<Daily>()
+    const summary = ref<CovidSummary>()
+    const daily = ref<CovidSummary[]>()
 
     const dailyOptions = {
       xaxis: {
@@ -62,12 +75,12 @@ export default defineComponent({
     const dailySeries = [
       {
         name: 'จำนวนผู้ติดเชื้อ',
-        data: [] as Array<string>,
+        data: [] as Array<number>,
         color: '' as string
       },
       {
         name: 'ผู้ป่วยในโรงพยาบาล',
-        data: [] as Array<string>,
+        data: [] as Array<number>,
         color: '' as string
       }
     ]
@@ -80,22 +93,35 @@ export default defineComponent({
   methods: {
     async getSummary () {
       await axios
-        .get('https://covid19.th-stat.com/json/covid19v2/getTodayCases.json')
-        .then((response) => {
-          this.summary = response.data as Summary
+        .get('https://covid19.ddc.moph.go.th/api/Cases/today-cases-all', {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response: AxiosResponse<CovidSummary[]>) => {
+          this.summary = response.data[0]
+        })
+        .catch((error) => {
+          console.log(error)
         })
     },
     async getDaily () {
       await axios
-        .get('https://covid19.th-stat.com/json/covid19v2/getTimeline.json')
-        .then(response => {
-          this.daily = response.data as Daily
+        .get('https://covid19.ddc.moph.go.th/api/Cases/timeline-cases-all', {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            Accept: 'application/json'
+          }
+        })
+        .then((response: AxiosResponse<CovidSummary[]>) => {
+          console.log(response)
+          this.daily = response.data
           if (this.daily) {
-            const newConfirmed = this.daily.Data.map(item => item.NewConfirmed)
-            const newRecovered = this.daily.Data.map(item => item.NewRecovered)
-            const newHospitalized = this.daily.Data.map(item => item.NewHospitalized)
-            const newDeaths = this.daily.Data.map(item => item.NewDeaths)
-            const date = this.daily.Data.map(item => item.Date)
+            const newConfirmed = this.daily.map(item => item.new_case)
+            const newRecovered = this.daily.map(item => item.new_recovered)
+            const newDeaths = this.daily.map(item => item.new_death)
+            const date = this.daily.map(item => item.txn_date)
             const colorScheme = {
               red: '#ef5350',
               green: '#66bb6a',
@@ -112,11 +138,6 @@ export default defineComponent({
                 name: 'รักษาหายแล้ว',
                 data: newRecovered,
                 color: colorScheme.green
-              },
-              {
-                name: 'ผู้ป่วยในโรงพยาบาล',
-                data: newHospitalized,
-                color: colorScheme.orange
               },
               {
                 name: 'ผู้เสียชีวิต',

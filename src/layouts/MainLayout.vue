@@ -58,7 +58,7 @@ const linksData = [
     title: 'API Reference',
     caption: 'Department of Disease Control',
     icon: 'code',
-    link: 'https://covid19.th-stat.com/en/api'
+    link: 'https://covid19.ddc.moph.go.th'
   }
 ]
 

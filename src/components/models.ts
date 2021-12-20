@@ -1,33 +1,13 @@
-export interface Todo {
-  id: number;
-  content: string;
-}
+/* eslint-disable camelcase */
 
-export interface Meta {
-  totalCount: number;
-}
-
-interface Covid {
-  Confirmed: string,
-  Date?: string,
-  Deaths: string,
-  Hospitalized: string,
-  NewConfirmed: string,
-  NewDeaths: string,
-  NewHospitalized: string,
-  NewRecovered: string,
-  Recovered: string,
-}
-
-interface General {
-  DevBy: string,
-  SeverBy: string,
-  Source: string,
-  UpdateDate: string
-}
-
-export interface Summary extends Covid, General {}
-
-export interface Daily extends General {
-  Data: [Covid]
+export interface CovidSummary {
+  new_case: number
+  new_case_excludeabroad: number
+  new_death: number
+  new_recovered: number
+  total_case: number
+  total_case_excludeabroad: number
+  total_death: number
+  total_recovered: number
+  txn_date: string
 }

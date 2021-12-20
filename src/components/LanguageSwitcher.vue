@@ -1,5 +1,6 @@
 <template>
   <q-select
+    label-color="white"
     v-model="lang"
     :options="langOptions"
     label="Language"
@@ -8,7 +9,7 @@
     emit-value
     map-options
     options-dense
-    style="min-width: 100px"
+    style="min-width: 80px"
   />
 </template>
 

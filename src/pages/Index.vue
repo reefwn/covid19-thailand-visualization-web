@@ -36,11 +36,12 @@
       </q-card>
     </div>
     <div class="row justify-center fit">
-      <div class="col-8">
+      <div class="col-lg-8 col-12">
         <apexchart
           ref="dailyChart"
           class="fit"
           type="line"
+          strokeWidth="1"
           :options="dailyOptions"
           :series="dailySeries"
         />
@@ -115,7 +116,6 @@ export default defineComponent({
           }
         })
         .then((response: AxiosResponse<CovidSummary[]>) => {
-          console.log(response)
           this.daily = response.data
           if (this.daily) {
             const newConfirmed = this.daily.map(item => item.new_case)
@@ -155,6 +155,9 @@ export default defineComponent({
               }
             }
           }
+        })
+        .catch((error) => {
+          console.log(error)
         })
     }
   }

@@ -51,9 +51,9 @@
 </template>
 
 <script lang="ts">
-import axios, { AxiosResponse } from 'axios'
 import VueApexCharts from 'vue-apexcharts'
-import { CovidSummary } from '../components/models'
+import axios, { AxiosResponse } from 'axios'
+import { CovidSummary } from '../constants/models'
 import { defineComponent, ref } from '@vue/composition-api'
 
 export default defineComponent({

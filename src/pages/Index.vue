@@ -5,10 +5,10 @@
         <q-card-section class="text-right text-white bg-red-5">
           <div class="text-subtitle2">{{ $t("cases") }}</div>
           <div class="text-h6">
-            {{ summary ? `${summary.total_case}` : null }}
+            {{ summary ? `${formatNumber(summary.total_case)}` : null }}
           </div>
           <div class="text-subtitle2">
-            + {{ summary ? `${summary.new_case}`: null }}
+            + {{ summary ? `${formatNumber(summary.new_case)}`: null }}
           </div>
         </q-card-section>
       </q-card>
@@ -16,10 +16,10 @@
         <q-card-section class="text-right text-white bg-green-5">
           <div class="text-subtitle2">{{ $t("recovered") }}</div>
           <div class="text-h6">
-            {{ summary ? `${summary.total_recovered}` : null }}
+            {{ summary ? `${formatNumber(summary.total_recovered)}` : null }}
           </div>
           <div class="text-subtitle2">
-            + {{ summary ? `${summary.new_recovered}` : null }}
+            + {{ summary ? `${formatNumber(summary.new_recovered)}` : null }}
           </div>
         </q-card-section>
       </q-card>
@@ -27,10 +27,10 @@
         <q-card-section class="text-right text-white bg-brown-5">
           <div class="text-subtitle2">{{ $t("death") }}</div>
           <div class="text-h6">
-            {{ summary ? `${summary.total_death}` : null }}
+            {{ summary ? `${formatNumber(summary.total_death)}` : null }}
           </div>
           <div class="text-subtitle2">
-            + {{ summary ? `${summary.new_death}` : null }}
+            + {{ summary ? `${formatNumber(summary.new_death)}` : null }}
           </div>
         </q-card-section>
       </q-card>
@@ -89,7 +89,7 @@ export default defineComponent({
 
     const dailyOptions = {
       xaxis: {
-        categories: [] as Array<string | undefined>,
+        categories: [] as Array<string>,
         tickAmount: 0 as number,
         labels: {
           rotate: 0 as number
@@ -144,6 +144,9 @@ export default defineComponent({
     }
   },
   methods: {
+    formatNumber (val: number) {
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
     async getSummary () {
       await axios
         .get('https://covid19.ddc.moph.go.th/api/Cases/today-cases-all', {

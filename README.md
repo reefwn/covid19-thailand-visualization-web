@@ -28,6 +28,12 @@ yarn run lint
 quasar build
 ```
 
+## Deploy the app on github page
+
+```
+yarn deploy
+```
+
 ## Technologies & IDE
 
 <div>

@@ -145,7 +145,7 @@ export default defineComponent({
   },
   methods: {
     formatNumber (val: number) {
-      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     async getSummary () {
       await axios
@@ -242,6 +242,6 @@ export default defineComponent({
         ]
       }
     }
-  },
+  }
 })
 </script>

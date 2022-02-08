@@ -7,5 +7,8 @@ export default {
   links: {
     title: 'Essential Links',
     api: 'API Reference'
+  },
+  section2: {
+    title: 'New Cases by Province'
   }
 }

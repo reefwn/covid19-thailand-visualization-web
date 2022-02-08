@@ -7,5 +7,8 @@ export default {
   links: {
     title: 'ลิ้งค์ที่สำคัญ',
     api: 'API อ้างอิง'
+  },
+  section2: {
+    title: 'ผู้ติดเชื้อรายจังหวัด'
   }
 }

@@ -11,3 +11,13 @@ export interface CovidSummary {
   total_recovered: number
   txn_date: string
 }
+
+export interface CovidByProvince extends CovidSummary {
+  province: string
+  update_date: string
+}
+
+export interface Coordinate {
+  x: number | string
+  y: number
+}

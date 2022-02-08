@@ -69,6 +69,8 @@ import VueApexCharts from 'vue-apexcharts'
 import axios, { AxiosResponse } from 'axios'
 import { Coordinate, CovidByProvince, CovidSummary } from '../constants/models'
 import { defineComponent, ref } from '@vue/composition-api'
+import { i18n } from 'src/boot/i18n'
+import { provincesTH, provincesEN } from '../constants/provinces'
 
 export default defineComponent({
   name: 'PageIndex',
@@ -97,12 +99,7 @@ export default defineComponent({
 
     const dailySeries = [
       {
-        name: 'จำนวนผู้ติดเชื้อ',
-        data: [] as Array<number>,
-        color: '' as string
-      },
-      {
-        name: 'ผู้ป่วยในโรงพยาบาล',
+        name: i18n.t('cases'),
         data: [] as Array<number>,
         color: '' as string
       }
@@ -118,7 +115,7 @@ export default defineComponent({
 
     const provinceSeries = [
       {
-        name: 'จำนวนผู้ติดเชื้อ',
+        name: i18n.t('cases'),
         data: [] as Array<Coordinate>,
         color: '' as string
       }
@@ -137,8 +134,14 @@ export default defineComponent({
   },
   mounted () {
     this.getSummary()
-    this.getDaily()
-    this.getDailyByProvince()
+    this.getDaily().then(() => this.dailyChart())
+    this.getDailyByProvince().then(() => this.provinceChart())
+  },
+  watch: {
+    '$i18n.locale' () {
+      this.dailyChart()
+      this.provinceChart()
+    }
   },
   methods: {
     async getSummary () {
@@ -166,42 +169,44 @@ export default defineComponent({
         })
         .then((response: AxiosResponse<CovidSummary[]>) => {
           this.daily = response.data
-          if (this.daily) {
-            const newConfirmed = this.daily.map(item => item.new_case)
-            const newRecovered = this.daily.map(item => item.new_recovered)
-            const newDeaths = this.daily.map(item => item.new_death)
-            const date = this.daily.map(item => item.txn_date)
-            this.dailySeries = [
-              {
-                name: 'ผู้ติดเชื้อ',
-                data: newConfirmed,
-                color: this.colorScheme.red
-              },
-              {
-                name: 'รักษาหายแล้ว',
-                data: newRecovered,
-                color: this.colorScheme.green
-              },
-              {
-                name: 'ผู้เสียชีวิต',
-                data: newDeaths,
-                color: this.colorScheme.brown
-              }
-            ]
-            this.dailyOptions = {
-              xaxis: {
-                categories: date,
-                tickAmount: 6,
-                labels: {
-                  rotate: 0
-                }
-              }
-            }
-          }
         })
         .catch((error) => {
           console.log(error)
         })
+    },
+    dailyChart () {
+      if (this.daily) {
+        const newConfirmed = this.daily.map(item => item.new_case)
+        const newRecovered = this.daily.map(item => item.new_recovered)
+        const newDeaths = this.daily.map(item => item.new_death)
+        const date = this.daily.map(item => item.txn_date)
+        this.dailySeries = [
+          {
+            name: i18n.t('cases'),
+            data: newConfirmed,
+            color: this.colorScheme.red
+          },
+          {
+            name: i18n.t('recovered'),
+            data: newRecovered,
+            color: this.colorScheme.green
+          },
+          {
+            name: i18n.t('death'),
+            data: newDeaths,
+            color: this.colorScheme.brown
+          }
+        ]
+        this.dailyOptions = {
+          xaxis: {
+            categories: date,
+            tickAmount: 6,
+            labels: {
+              rotate: 0
+            }
+          }
+        }
+      }
     },
     async getDailyByProvince () {
       await axios
@@ -213,24 +218,27 @@ export default defineComponent({
         })
         .then((response: AxiosResponse<CovidByProvince[]>) => {
           this.province = response.data
-          if (this.province) {
-            const top10 = this.province.sort((a, b) => b.new_case - a.new_case).slice(0, 10)
-            const newCase = top10.map((item) => {
-              return { x: item.province, y: item.new_case } as Coordinate
-            })
-            this.provinceSeries = [
-              {
-                name: 'จำนวนผู้ติดเชื้อ',
-                data: newCase,
-                color: this.colorScheme.red
-              }
-            ]
-          }
         })
         .catch((error) => {
           console.log(error)
         })
+    },
+    provinceChart () {
+      if (this.province) {
+        const top10 = this.province.sort((a, b) => b.new_case - a.new_case).slice(0, 10)
+        const newCase = top10.map((item) => {
+          const index = provincesTH.indexOf(item.province)
+          return { x: i18n.locale === 'th-th' ? item.province : provincesEN[index], y: item.new_case } as Coordinate
+        })
+        this.provinceSeries = [
+          {
+            name: i18n.t('cases'),
+            data: newCase,
+            color: this.colorScheme.red
+          }
+        ]
+      }
     }
-  }
+  },
 })
 </script>

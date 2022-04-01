@@ -1,8 +1,8 @@
-# Covid-19 Visualization Web Application (Thailand)
+# Covid-19 Visualization Web (Thailand)
 
 ## Demo
 
-https://reefwn.github.io/covid19-visualization-web-thailand/
+https://reefwn.github.io/thai-covid19-visualization-web/
 
 ## Install the dependencies
 

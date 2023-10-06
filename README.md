@@ -34,6 +34,10 @@ quasar build
 yarn deploy
 ```
 
+## Preview
+
+<img src="https://github.com/reefwn/thai-covid19-visualization-web/blob/main/screenshot.png?raw=true" />
+
 ## Technologies & IDE
 
 <div>
